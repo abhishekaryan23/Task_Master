@@ -1,19 +1,47 @@
 # Task Management App
 
-A Task Management application built using Streamlit, Python, and MongoDB.
+This is a simple task management app built using Python and Streamlit.
 
 ## Installation
 
-1. Clone this repository.
-2. Set up a virtual environment and activate it.
-3. Install the required packages using `pip install -r requirements.txt`.
-4. Create a `.env` file and set the following variables:
+1. Clone the repository:
 
 ```
-MONGO_CONNECTION_STRING=<your_mongodb_connection_string>
-PASSWORD=<your_mongodb_password>
+git clone https://github.com/abhishekaryan23/Task_Master.git
 ```
-5. Run the app using the command `streamlit run app.py`.
+
+2. Set up a virtual environment and activate it
+
+```
+python -m venv env
+source env/bin/activate (Linux/MacOS) 
+env\Scripts\activate (Windows)
+```
+
+3. Install the dependencies:
+
+```
+pip install -r requirements.txt
+```
+4. Set up your MongoDB connection string:
+
+* If you're running the app locally, create a `config.toml` file in the src directory of the project and add the following:
+
+  ```
+  [mongodb]
+  uri = "your-mongodb-connection-string"
+  ```
+
+  Replace `"your-mongodb-connection-string"` with your actual MongoDB connection string.
+
+* If you're hosting the app in Streamlit Sharing, add a secret for your MongoDB connection string in the "Settings" tab of your Streamlit app.
+
+5. Start the app:
+
+
+```
+streamlit run app.py
+```
 
 ## Features
 
@@ -22,4 +50,12 @@ PASSWORD=<your_mongodb_password>
 - Create and assign tasks
 - Monitor task progress
 - Update task status
-- Filter tasks by status
+- Filter tasks by status & Users
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

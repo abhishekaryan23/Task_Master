@@ -1,0 +1,2 @@
+[mongodb]
+uri = "your-mongodb-connection-string"
