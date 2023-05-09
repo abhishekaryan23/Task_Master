@@ -3,3 +3,5 @@ pymongo==4.1.0
 pymongo[srv]==4.1.0
 dnspython==2.2.0
 python-dotenv
+toml
+bcrypt
