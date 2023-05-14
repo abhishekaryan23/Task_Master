@@ -12,7 +12,7 @@ def display_login_page():
         password = st.text_input("Password", type="password")
 
     if not admin_user_exists():
-        st.write("No admin user exists. Please create an initial admin user.")
+        st.info("No admin user exists. Please create an initial admin user.")
         admin_email = st.text_input("Admin Email", "")
         admin_password = st.text_input("Admin Password", type="password")
         admin_confirm_password = st.text_input("Confirm Admin Password", type="password")
