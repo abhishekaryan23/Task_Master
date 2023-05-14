@@ -7,10 +7,23 @@ class SessionState:
             setattr(self, key, val)
 
     def __getitem__(self, key):
-        return getattr(self, key)
+        if isinstance(key, str):
+            return getattr(self, key, None)
+        else:
+            raise ValueError(f"Key {key} is not a string.")
 
     def __setitem__(self, key, val):
-        setattr(self, key, val)
+        if isinstance(key, str):
+            setattr(self, key, val)
+        else:
+            raise ValueError(f"Key {key} is not a string.")
+            
+    def __contains__(self, key):
+        if isinstance(key, str):
+            return hasattr(self, key)
+        else:
+            raise ValueError(f"Key {key} is not a string.")
+
 
 def get_state(**kwargs):
     ctx = ReportThread.get_report_ctx().session_id

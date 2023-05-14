@@ -25,16 +25,33 @@ def create_task(task_data):
         "name": task_data["name"],
         "description": task_data["description"],  # Add this line
         "assigned_to": task_data["assigned_to"],
-        "status": task_data["status"],
+        "status": task_data.get("status", "pending"),
         "created_at": datetime.utcnow()
     }
     db.tasks.insert_one(task)
 
+
 def find_tasks_by_status(status):
-    return list(db.tasks.find({"status": status}))
+    tasks = list(db.tasks.find({"status_updates.status": status}))
+    for task in tasks:
+        if 'status_updates' in task and task['status_updates']:
+            latest_status_update = task['status_updates'][-1]
+            task['status'] = latest_status_update['status']
+    return tasks
 
 def update_task_status(task_id, new_status, comment=None):
-    db.tasks.update_one({"_id": ObjectId(task_id)}, {"$set": {"status": new_status, "comment": comment}})
+    status_update = {
+        "status": new_status,
+        "comment": comment,
+        "timestamp": datetime.utcnow()
+    }
+    db.tasks.update_one(
+        {"_id": ObjectId(task_id)}, 
+        {
+            "$push": {"status_updates": status_update}, 
+            "$set": {"status": new_status}
+        }
+    )
 
 def change_password(email, old_password, new_password):
     user = find_user_by_email(email)
