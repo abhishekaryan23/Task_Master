@@ -5,3 +5,4 @@ dnspython==2.2.0
 python-dotenv
 toml
 bcrypt
+altair==4.0
