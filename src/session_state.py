@@ -23,6 +23,16 @@ class SessionState:
             return hasattr(self, key)
         else:
             raise ValueError(f"Key {key} is not a string.")
+    
+    def get(self, key, default_value=None):
+        if isinstance(key, str):
+            return getattr(self, key, default_value)
+        else:
+            raise ValueError(f"Key {key} is not a string.")
+        
+    def clear(self):
+        for key in list(self.__dict__.keys()):
+            del self.__dict__[key]
 
 
 def get_state(**kwargs):
@@ -33,6 +43,10 @@ def get_state(**kwargs):
         raise RuntimeError("Couldn't get your Streamlit session.")
 
     if not hasattr(session, "_custom_session_state"):
-        session._custom_session_state = SessionState(**kwargs)
+        default_values = {'logged_in': False, 'user': None, 'is_first_login': False, 'company_name': "", 'page': "Dashboard"}
+        default_values.update(kwargs)  # Update default values with kwargs, kwargs will overwrite defaults if there are conflicts
+        session._custom_session_state = SessionState(**default_values)
 
     return session._custom_session_state
+
+

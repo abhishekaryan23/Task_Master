@@ -1,60 +1,83 @@
 import streamlit as st
-from .database import db
+# from .database import db
 from .helpers import create_new_user, create_task, find_tasks_by_status, update_task_status, login, change_password, admin_user_exists
-from .session_state import SessionState
+from .session_state import SessionState, get_state
 from datetime import datetime
 from pymongo import DESCENDING
+import time
+from email_validator import validate_email, EmailNotValidError
+
+
+def is_valid_mongodb_name(name):
+    """Check if the input name is valid for MongoDB"""
+    invalid_chars = ["$", ".", "\0"]
+    return not any(char in name for char in invalid_chars) and not name.startswith('system.')
 
 
 def display_login_page():
-    if admin_user_exists():
-        email = st.text_input("Email", "")
-        password = st.text_input("Password", type="password")
+    st.subheader("Login / Signup")
 
-    if not admin_user_exists():
-        st.info("No admin user exists. Please create an initial admin user.")
-        admin_email = st.text_input("Admin Email", "")
-        admin_password = st.text_input("Admin Password", type="password")
-        admin_confirm_password = st.text_input("Confirm Admin Password", type="password")
+    col1, col2 = st.columns(2)
 
-        create_admin_btn = st.button("Create Admin")
+    with col1:
+        st.subheader("Existing User Login")
 
-        if create_admin_btn:
-            if admin_password == admin_confirm_password:
-                create_new_user({"email": admin_email, "password": admin_password, "role": "admin"})
-                st.success("Admin user created successfully!")
-                st.experimental_rerun()
-            else:
-                st.error("Passwords do not match. Please try again.")
-    else:
-        login_btn = st.button("Login")
+        with st.form(key='login_form', clear_on_submit=True):
+            email_login = st.text_input("Email", key='email_login')
+            password_login = st.text_input("Password", type="password", key='password_login')
+            login_btn = st.form_submit_button("Login")
 
-        if login_btn:
-            user = login(email, password)
+            if login_btn:
+                user = login(email_login, password_login)
+                if user:
+                    st.session_state.logged_in = True
+                    st.session_state.user = user
+                    st.session_state.company_name = user['company_name']
+                    st.session_state.is_first_login = user.get('is_first_login', False)
+                    st.experimental_rerun()
+                else:                        st.error("Invalid email or password, or no account exists for the particular user.")
 
-            if user:
-                st.session_state.logged_in = True
-                st.session_state.user = user
-                st.experimental_rerun()
-            else:
-                st.error("Invalid email or password.")
+        st.write("")  # Add some spacing
+        signup_redirect_btn = st.button("New Signup for Your Project")
+        if signup_redirect_btn:
+            st.session_state.signup_redirect = True
+            st.experimental_rerun()
 
+    if st.session_state.get("signup_redirect", False):
+        with col2:
+            st.subheader("Signup")
+            with st.form(key='signup_form', clear_on_submit=True):
+                name_signup = st.text_input("Name", key='name_signup')  # Add name input field
+                email_signup = st.text_input("Email", key='email_signup')
+                password_signup = st.text_input("Password", type="password", key='password_signup')
+                confirm_password = st.text_input("Confirm Password", type="password", key='confirm_password')
+                company_name_input = st.text_input("Project Name", key='company_name')
+                company_name = company_name_input.strip().replace(' ', '_')[:20]
+                terms_conditions = st.checkbox("Accept terms and conditions", key='terms_conditions')
 
-def display_password_change_section(email):
-    st.sidebar.subheader("Change Password")
-    change_password_btn = st.sidebar.button("Change Password")
+                if company_name and not is_valid_mongodb_name(company_name):
+                    st.error("Invalid company name. The company name cannot contain '.', '$', null characters, or start with 'system.'")
 
-    if change_password_btn:
-        st.sidebar.markdown("---")  # Add a horizontal line for separation
-        st.sidebar.subheader("Reset Password")
-        current_password = st.sidebar.text_input("Current Password", type="password", key="current_password")
-        new_password = st.sidebar.text_input("New Password", type="password", key="new_password")
-        confirm_password = st.sidebar.text_input("Confirm New Password", type="password", key="confirm_password")
-        reset_password_btn = st.sidebar.button("Reset Password")
+                else:
+                    signup_btn = st.form_submit_button("Signup")
 
-        if reset_password_btn:
-            success, message = change_password(email, current_password, new_password, confirm_password)
-            if success:
-                st.sidebar.success(message)
-            else:
-                st.sidebar.error(message)
+                    if signup_btn:
+                        try:
+                            validated_email = validate_email(email_signup)
+                        except EmailNotValidError as e:
+                            st.error("Invalid email address. Please enter a valid email.")
+                            return
+                        if password_signup != confirm_password:
+                            st.error("Passwords do not match. Please try again.")
+                        elif not all([email_signup, password_signup, confirm_password, name_signup, company_name, terms_conditions]):
+                            st.warning("Please fill in all the fields and agree to the terms and conditions before signing up.")
+                        else:
+                            if admin_user_exists(company_name):
+                                st.error("An admin account already exists for this company.")
+                            else:
+                                create_new_user({"email": email_signup, "password": password_signup, "name": name_signup, "role": "admin"}, company_name, is_initial_admin=True)
+                                st.success("Signup was successful! You can now log in.")
+                                st.session_state.signup_redirect = False  # Reset the signup redirect flag
+
+                            time.sleep(2)
+                            st.experimental_rerun()

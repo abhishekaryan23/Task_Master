@@ -3,6 +3,13 @@ pymongo==4.1.0
 pymongo[srv]==4.1.0
 dnspython==2.2.0
 python-dotenv
-toml
-bcrypt
 altair==4.0
+bcrypt
+streamlit-lottie==0.0.3
+st-mui-dialog
+email-validator
+plotly
+pandas
+networkx
+matplotlib
+mplcursors
