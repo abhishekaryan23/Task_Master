@@ -282,8 +282,8 @@ def display_admin_dashboard(name):
             st.write("")
             st.write(f"**Name:** {st.session_state.user['name']}")
             st.write(f"**Email:** {st.session_state.user['email']}")
-            st.write(f"**Company Name:** {st.session_state.company_name}")
-            st.write(f"**Role:** {st.session_state.user['role']}")
+            st.write(f"**Project Name:** {st.session_state.company_name}")
+            st.write(f"**Role:** {st.session_state.user['role'].capitalize()}")
 
             # Display password change section
             change_password_btn = st.button("Change Password")
