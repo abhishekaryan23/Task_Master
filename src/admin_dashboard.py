@@ -26,7 +26,7 @@ def display_admin_dashboard(name):
         "Create Task": "➕", 
         "Monitor Tasks": "🔍",
         "User Management": "👥",
-        "Profile": "👥",
+        "Profile": "👤",
         "Task Statistics": "📊"
     }
 
