@@ -50,7 +50,9 @@ streamlit run app.py
 - Create and assign tasks
 - Monitor task progress
 - Update task status
-- Filter tasks by status & Users
+- Filter tasks by status, Users, priority
+- added task dependecy.
+- added task statistics visualization.
 
 ## Contributing
 
