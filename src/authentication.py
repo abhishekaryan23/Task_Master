@@ -28,7 +28,7 @@ def display_login_page():
             login_btn = st.form_submit_button("Login")
 
             if login_btn:
-                user = login(email_login, password_login)
+                user = login(email_login.lower(), password_login)
                 if user:
                     st.session_state.logged_in = True
                     st.session_state.user = user
@@ -75,7 +75,7 @@ def display_login_page():
                             if admin_user_exists(company_name):
                                 st.error("An admin account already exists for this company.")
                             else:
-                                create_new_user({"email": email_signup, "password": password_signup, "name": name_signup, "role": "admin"}, company_name, is_initial_admin=True)
+                                create_new_user({"email": email_signup.lower(), "password": password_signup, "name": name_signup, "role": "admin"}, company_name, is_initial_admin=True)
                                 st.success("Signup was successful! You can now log in.")
                                 st.session_state.signup_redirect = False  # Reset the signup redirect flag
 

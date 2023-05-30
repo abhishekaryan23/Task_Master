@@ -223,7 +223,7 @@ def display_admin_dashboard(name):
                         return
                     if new_password == confirm_password:
                         try:
-                            create_new_user({"name": new_name, "email": new_email, "password": new_password, "role": role}, st.session_state.company_name)
+                            create_new_user({"name": new_name, "email": new_email.lower(), "password": new_password, "role": role}, st.session_state.company_name)
                             st.success("User created successfully!")
                             time.sleep(2)
                             st.experimental_rerun()
